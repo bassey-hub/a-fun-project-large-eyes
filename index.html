@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Large 3D Eyes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .eye-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) perspective(1000px);
+            display: flex;
+            justify-content: center;
+            gap: 160px;
+            z-index: 1000;
+        }
+        
+        .eye {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 
+                30px 30px 60px rgba(0, 0, 0, 0.2),
+                -30px -30px 60px rgba(255, 255, 255, 0.5),
+                inset 10px 10px 20px rgba(0, 0, 0, 0.1),
+                inset -10px -10px 20px rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            transition: transform 0.1s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .eye::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 70px;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #fff 15%, #aaa 100%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 
+                0 0 16px rgba(0, 0, 0, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.8);
+            filter: blur(1px);
+        }
+        
+        .iris {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle at 30% 30%, #7c3aed 0%, #4c1d95 80%, #1e1b4b 100%);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            box-shadow: 
+                inset 10px 10px 30px rgba(0, 0, 0, 0.5),
+                inset -10px -10px 20px rgba(255, 255, 255, 0.2),
+                0 0 20px rgba(0, 0, 0, 0.3);
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+        }
+        
+        .pupil {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #111 0%, #000 100%);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 
+                0 0 16px rgba(0, 0, 0, 0.8),
+                inset 0 0 30px rgba(100, 100, 255, 0.2);
+            border: 2px solid rgba(50, 50, 50, 0.5);
+        }
+        
+        .eye::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            pointer-events: none;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #f5f3ff, #ddd6fe);
+            margin: 0;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+        
+        /* Add subtle reflection */
+        .reflection {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            top: 20%;
+            left: 30%;
+            filter: blur(4px);
+            transform: rotateX(30deg) rotateY(20deg);
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <div class="eye-container">
+        <div class="eye left-eye">
+            <div class="reflection"></div>
+            <div class="iris left-iris">
+                <div class="pupil"></div>
+            </div>
+        </div>
+        
+        <div class="eye right-eye">
+            <div class="reflection"></div>
+            <div class="iris right-iris">
+                <div class="pupil"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const leftEye = document.querySelector('.left-eye');
+            const rightEye = document.querySelector('.right-eye');
+            const leftIris = document.querySelector('.left-iris');
+            const rightIris = document.querySelector('.right-iris');
+            const reflections = document.querySelectorAll('.reflection');
+            
+            // Calculate eye positions
+            const leftEyeRect = leftEye.getBoundingClientRect();
+            const rightEyeRect = rightEye.getBoundingClientRect();
+            
+            const leftEyeCenter = {
+                x: leftEyeRect.left + leftEyeRect.width / 2,
+                y: leftEyeRect.top + leftEyeRect.height / 2
+            };
+            
+            const rightEyeCenter = {
+                x: rightEyeRect.left + rightEyeRect.width / 2,
+                y: rightEyeRect.top + rightEyeRect.height / 2
+            };
+            
+            // Calculate angle and distance from cursor to eye centers
+            const leftAngle = Math.atan2(e.clientY - leftEyeCenter.y, e.clientX - leftEyeCenter.x);
+            const rightAngle = Math.atan2(e.clientY - rightEyeCenter.y, e.clientX - rightEyeCenter.x);
+            
+            // Calculate distance (limited to keep iris within eye)
+            const leftDistance = Math.min(
+                Math.sqrt(
+                    Math.pow(e.clientX - leftEyeCenter.x, 2) + 
+                    Math.pow(e.clientY - leftEyeCenter.y, 2)
+                ), 
+                60
+            );
+            
+            const rightDistance = Math.min(
+                Math.sqrt(
+                    Math.pow(e.clientX - rightEyeCenter.x, 2) + 
+                    Math.pow(e.clientY - rightEyeCenter.y, 2)
+                ), 
+                60
+            );
+            
+            // Calculate new iris position
+            const leftX = Math.cos(leftAngle) * leftDistance;
+            const leftY = Math.sin(leftAngle) * leftDistance;
+            
+            const rightX = Math.cos(rightAngle) * rightDistance;
+            const rightY = Math.sin(rightAngle) * rightDistance;
+            
+            // Apply movement to irises with 3D perspective
+            leftIris.style.transform = `translate3d(calc(-50% + ${leftX}px), calc(-50% + ${leftY}px), 0) rotateX(${-leftY/5}deg) rotateY(${leftX/5}deg)`;
+            rightIris.style.transform = `translate3d(calc(-50% + ${rightX}px), calc(-50% + ${rightY}px), 0) rotateX(${-rightY/5}deg) rotateY(${rightX/5}deg)`;
+            
+            // Add subtle 3D eye movement
+            leftEye.style.transform = `rotateX(${-leftY/20}deg) rotateY(${leftX/20}deg)`;
+            rightEye.style.transform = `rotateX(${-rightY/20}deg) rotateY(${rightX/20}deg)`;
+            
+            // Move reflections opposite to eye movement
+            reflections[0].style.transform = `translate(${-leftX/3}px, ${-leftY/3}px) rotateX(30deg) rotateY(20deg)`;
+            reflections[1].style.transform = `translate(${-rightX/3}px, ${-rightY/3}px) rotateX(30deg) rotateY(20deg)`;
+        });
+    </script>
+</body>
+</html>
