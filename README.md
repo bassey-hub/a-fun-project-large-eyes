@@ -1,4 +1,4 @@
-# a fun project — large eyes
+# a fun project — large eyes (made for desktop)
 A light-hearted and interactive web project made for fun, where a pair of cartoonish eyes follow your mouse cursor around the screen.
 
 # Tech Stack
